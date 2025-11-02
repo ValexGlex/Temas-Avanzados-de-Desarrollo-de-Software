@@ -1,0 +1,103 @@
+{% load static %} <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Gestión Estudiantil{% endblock %}</title>
+    
+    <link rel="stylesheet" href="{% static 'page/style.css' %}">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+
+
+<body>
+    <header class="main-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <i data-lucide="graduation-cap"></i>
+                </div>
+                <div>
+                    <h1 class="site-title">Sistema de Gestión Estudiantil</h1>
+                    <p class="site-subtitle">Análisis y Control Académico</p>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                {% if request.session.maestro_correo %}
+                    <div class="muted" style="margin-right:.5rem;">
+                        <i data-lucide="user"></i> {{ request.session.maestro_correo }}
+                    </div>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button class="header-btn" style="gap:.5rem;">
+                            <i data-lucide="log-out"></i><span>Salir</span>
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <div class="app-wrapper">
+
+    {% if request.session.maestro_correo %}
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <div class="submenu-container">
+                    <a href="{% url 'inicio' %}" class="submenu-trigger">
+                        Inicio
+                        <span class="arrow">▸</span>
+                    </a>
+                    <ul class="submenu-content">
+                        <li><a href="{% url 'estratificacion' %}">Estratificación</a></li>
+                        <li><a href="{% url 'histograma' %}">Histograma</a></li>
+                        <li><a href="{% url 'pareto' %}">Diagrama de Pareto</a></li>
+                        <li><a href="{% url 'control' %}">Gráfica de Control</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+    {% endif %}
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    </div>
+        <div class="footer-content">
+            <p>&copy; 2025 Sistema de Gestión Estudiantil. Todos los derechos reservados.</p>
+            <div class="footer-links">
+                
+                <a href="{% url 'documentacion' %}" class="footer-link">Documentación</a>
+               
+            </div>
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+    
+    <script>
+        // Inicializar iconos de Lucide
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+    </script>
+
+    {% load static %}
+    <!-- ...tu HTML... -->
+
+    <!-- Chart.js (si ya lo cargas en otro archivo, no lo dupliques) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Lógica de importación CSV y actualización del dashboard -->
+    <script src="{% static 'page/js/dashboard.csv.js' %}"></script>
+
+</body>
+</html>
