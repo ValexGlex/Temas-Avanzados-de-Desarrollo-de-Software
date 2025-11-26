@@ -6,6 +6,12 @@
     <title>{% block title %}Sistema de Gestión Estudiantil{% endblock %}</title>
    
     <link rel="stylesheet" href="{% static 'page/style.css' %}">
+    <link href="https://cdn.jsdelivr.net/gh/antijingoist/open-dyslexic/website/css/OpenDyslexic.css" rel="stylesheet">
+    <style>
+        body.dyslexia-font, body.dyslexia-font * {
+            font-family: 'OpenDyslexic', Arial, sans-serif !important;
+        }
+    </style>
    
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
    
@@ -143,6 +149,12 @@
             <i data-lucide="palette"></i>
         </button>
 
+        <button class="accessibility-btn" id="btnDyslexia" onclick="toggleDyslexia()" 
+        aria-label="Fuente para Dislexia" title="Fuente para Dislexia (Alt + D)">
+        <i data-lucide="type"></i>
+         </button>
+
+
         <button class="accessibility-btn" onclick="toggleModal(true)" aria-label="Atajos (Alt + K)" title="Atajos de teclado (Alt + K)">
             <i data-lucide="keyboard"></i>
         </button>
@@ -170,6 +182,9 @@
             </div>
             <div class="shortcut-item">
                 <kbd>Alt</kbd> + <kbd>G</kbd> <span>Escala de Grises</span>
+            </div>
+            <div class="shortcut-item">
+                <kbd>Alt</kbd> + <kbd>D</kbd> <span>Fuente para Dislexia</span>
             </div>
             <div class="shortcut-item">
                 <kbd>Alt</kbd> + <kbd>K</kbd> <span>Mostrar atajos de teclado</span>
@@ -201,6 +216,7 @@
         let currentFontSize = localStorage.getItem('fontSize') || 'normal';
         let cursorState = localStorage.getItem('cursor') === 'large'; 
         let grayscaleState = localStorage.getItem('grayscale') === 'true'; 
+        let dyslexiaState = localStorage.getItem('dyslexiaFont') === 'true';
         let isModalOpen = false;
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -210,6 +226,8 @@
             applyFontSize(currentFontSize);
             applyCursor(cursorState); // APLICAR CURSOR
             applyGrayscale(grayscaleState); // APLICAR GRISES
+            applyDyslexia(dyslexiaState);
+
 
             // Teclado Global
             window.addEventListener('keydown', (e) => {
@@ -223,6 +241,11 @@
                 if (e.altKey && e.key.toLowerCase() === "c") { e.preventDefault(); toggleCursor(); }
                 // NUEVO ATAJO ALT + G
                 if (e.altKey && e.key.toLowerCase() === "g") { e.preventDefault(); toggleGrayscale(); } 
+                // Alt + D: Fuente discapacidad lectora
+                if (e.altKey && e.key.toLowerCase() === "d") { 
+                    e.preventDefault(); 
+                    toggleDyslexia(); 
+                } 
                 // Alt + K: Modal
                 if (e.altKey && e.key.toLowerCase() === "k") { e.preventDefault(); toggleModal(!isModalOpen); }
                 // Esc: Cerrar Modal
@@ -368,6 +391,34 @@
                 backdrop.classList.remove('modal-open');
             }
         }
+
+        function toggleDyslexia() {
+    dyslexiaState = !dyslexiaState;
+    applyDyslexia(dyslexiaState);
+}
+
+function applyDyslexia(active) {
+    const body = document.body;
+    const btn = document.getElementById('btnDyslexia');
+
+    if (active) {
+        body.classList.add('dyslexia-font');
+
+        if (btn) {
+            btn.style.background = 'rgba(255,255,255,0.2)';
+            btn.style.color = '#fff';
+        }
+    } else {
+        body.classList.remove('dyslexia-font');
+
+        if (btn) {
+            btn.style.background = '';
+            btn.style.color = '';
+        }
+    }
+
+    localStorage.setItem('dyslexiaFont', active);
+}
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
