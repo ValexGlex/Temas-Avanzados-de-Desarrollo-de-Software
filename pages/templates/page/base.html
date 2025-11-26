@@ -1,0 +1,377 @@
+{% load static %} <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Gestión Estudiantil{% endblock %}</title>
+   
+    <link rel="stylesheet" href="{% static 'page/style.css' %}">
+   
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+   
+    <script src="https://unpkg.com/lucide@latest"></script>
+       
+    <style> 
+        /* CURSOR GIGANTE */
+        body.large-cursor, 
+        body.large-cursor * {
+            cursor: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBmaWxsPSJibGFjayIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxLjUiPjxwYXRoIGQ9Ik0yIDJsMTEgMTguNSAzLjUtOCA4LTMuNUwyIDJ6Ii8+PC9zdmc+') 0 0, auto !important;
+        }
+
+        /* CAPA DE GRISES  */
+        .grayscale-overlay {
+            position: fixed;
+            top: 0; 
+            left: 0;
+            width: 100vw; 
+            height: 100vh;
+            pointer-events: none; 
+            z-index: 10002; 
+            backdrop-filter: grayscale(100%); /* Convierte en gris lo que está detrás */
+            -webkit-backdrop-filter: grayscale(100%);
+            display: none; 
+        }
+        
+        /* Cuando el body tiene la clase, mostramos la capa */
+        body.grayscale-mode .grayscale-overlay {
+            display: block;
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+
+<body>
+    <div class="grayscale-overlay"></div>
+    <header class="main-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <i data-lucide="graduation-cap"></i>
+                </div>
+                <div>
+                    <h1 class="site-title">Sistema de Gestión Estudiantil</h1>
+                    <p class="site-subtitle">Análisis y Control Académico</p>
+                </div>
+            </div>
+           
+            <div class="header-actions">
+                {% if request.session.maestro_correo %}
+                    <div class="muted" style="margin-right:.5rem;">
+                        <i data-lucide="user"></i> {{ request.session.maestro_correo }}
+                    </div>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button class="header-btn" style="gap:.5rem; background:none; border:none; cursor:pointer; color:inherit;">
+                            <i data-lucide="log-out"></i><span>Salir</span>
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+
+    <div class="app-wrapper">
+
+
+    {% if request.session.maestro_correo %}
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <div class="submenu-container">
+                    <a href="{% url 'inicio' %}" class="submenu-trigger">
+                        Inicio
+                        <span class="arrow">▸</span>
+                    </a>
+                    <ul class="submenu-content">
+                        <li><a href="{% url 'estratificacion' %}">Estratificación</a></li>
+                        <li><a href="{% url 'histograma' %}">Histograma</a></li>
+                        <li><a href="{% url 'pareto' %}">Diagrama de Pareto</a></li>
+                        <li><a href="{% url 'control' %}">Gráfica de Control</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+
+    {% endif %}
+
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+
+    </div>
+        <div class="footer-content">
+            <p>&copy; 2025 Sistema de Gestión Estudiantil. Todos los derechos reservados.</p>
+            <div class="footer-links">
+               
+                <a href="{% url 'documentacion' %}" class="footer-link">Documentación</a>
+               
+            </div>
+        </div>
+    </footer>
+
+
+    <div class="accessibility-bar" role="toolbar" aria-label="Herramientas de accesibilidad">
+       
+        <div class="accessibility-trigger">
+            <i data-lucide="sparkles"></i>
+        </div>
+
+        <div class="accessibility-divider"></div>
+       
+        <button class="accessibility-btn" id="btnTheme" onclick="toggleTheme()" aria-label="Cambiar tema (Alt + T)" title="Cambiar tema (Alt + T)">
+            <i data-lucide="sun" id="iconTheme"></i>
+        </button>
+       
+        <button class="accessibility-btn" id="btnZoomIn" onclick="handleZoomIn()" aria-label="Aumentar texto (Alt + +)" title="Aumentar texto (Alt + +)">
+            <i data-lucide="zoom-in"></i>
+        </button>
+       
+        <button class="accessibility-btn" id="btnZoomOut" onclick="handleZoomOut()" aria-label="Reducir texto (Alt + -)" title="Reducir texto (Alt + -)">
+            <i data-lucide="zoom-out"></i>
+        </button>
+
+        <button class="accessibility-btn" id="btnCursor" onclick="toggleCursor()" aria-label="Cursor Grande" title="Cursor Grande (Alt + C)">
+            <i data-lucide="mouse-pointer-2"></i>
+        </button>
+
+        <button class="accessibility-btn" id="btnGrayscale" onclick="toggleGrayscale()" aria-label="Escala de Grises" title="Modo Daltonismo (Alt + G)">
+            <i data-lucide="palette"></i>
+        </button>
+
+        <button class="accessibility-btn" onclick="toggleModal(true)" aria-label="Atajos (Alt + K)" title="Atajos de teclado (Alt + K)">
+            <i data-lucide="keyboard"></i>
+        </button>
+    </div>
+
+
+    <div class="modal-backdrop" id="modalBackdrop" onclick="toggleModal(false)"></div>
+    <div class="keyboard-modal" id="keyboardModal" role="dialog" aria-modal="true">
+        <div class="modal-header">
+            <h2>Atajos de Teclado</h2>
+            <button class="close-btn" onclick="toggleModal(false)" aria-label="Cerrar">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="shortcut-item">
+                <kbd>Alt</kbd> + <kbd>T</kbd> <span>Cambiar tema claro/oscuro</span>
+            </div>
+            <div class="shortcut-item">
+                <kbd>Alt</kbd> + <kbd>+</kbd> <span>Aumentar tamaño de texto</span>
+            </div>
+            <div class="shortcut-item">
+                <kbd>Alt</kbd> + <kbd>-</kbd> <span>Reducir tamaño de texto</span>
+            </div>
+              <div class="shortcut-item">
+                <kbd>Alt</kbd> + <kbd>C</kbd> <span>Activar cursor grande</span>
+            </div>
+            <div class="shortcut-item">
+                <kbd>Alt</kbd> + <kbd>G</kbd> <span>Escala de Grises</span>
+            </div>
+            <div class="shortcut-item">
+                <kbd>Alt</kbd> + <kbd>K</kbd> <span>Mostrar atajos de teclado</span>
+            </div>
+            <div class="shortcut-item">
+                <kbd>Esc</kbd> <span>Cerrar diálogos</span>
+            </div>
+        </div>
+    </div>
+
+    {% block scripts %}{% endblock %}
+   
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+    </script>
+
+
+    {% load static %}
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lógica de importación CSV y actualización del dashboard -->
+    <script src="{% static 'page/js/dashboard.csv.js' %}"></script>
+
+    <script>
+        // --- Variables de Estado  ---
+        let currentTheme = localStorage.getItem('theme') || 'light';
+        let currentFontSize = localStorage.getItem('fontSize') || 'normal';
+        let cursorState = localStorage.getItem('cursor') === 'large'; 
+        let grayscaleState = localStorage.getItem('grayscale') === 'true'; 
+        let isModalOpen = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+           
+            applyTheme(currentTheme);
+            applyFontSize(currentFontSize);
+            applyCursor(cursorState); // APLICAR CURSOR
+            applyGrayscale(grayscaleState); // APLICAR GRISES
+
+            // Teclado Global
+            window.addEventListener('keydown', (e) => {
+                // Alt + T: Tema
+                if (e.altKey && e.key.toLowerCase() === "t") { e.preventDefault(); toggleTheme(); }
+                // Alt + +: Zoom In
+                if (e.altKey && (e.key === "+" || e.key === "=")) { e.preventDefault(); handleZoomIn(); }
+                // Alt + -: Zoom Out
+                if (e.altKey && e.key === "-") { e.preventDefault(); handleZoomOut(); }
+                // Alt + C: Cursor (NUEVO)
+                if (e.altKey && e.key.toLowerCase() === "c") { e.preventDefault(); toggleCursor(); }
+                // NUEVO ATAJO ALT + G
+                if (e.altKey && e.key.toLowerCase() === "g") { e.preventDefault(); toggleGrayscale(); } 
+                // Alt + K: Modal
+                if (e.altKey && e.key.toLowerCase() === "k") { e.preventDefault(); toggleModal(!isModalOpen); }
+                // Esc: Cerrar Modal
+                if (e.key === "Escape" && isModalOpen) { toggleModal(false); }
+            });
+        });
+
+        // --- FUNCIÓN ESCALA DE GRISES ---
+        function toggleGrayscale() {
+            grayscaleState = !grayscaleState;
+            applyGrayscale(grayscaleState);
+        }
+
+        function applyGrayscale(active) {
+        const body = document.body;
+        const btn = document.getElementById('btnGrayscale');
+
+        if (active) {
+            body.classList.add('grayscale-mode');
+            if(btn) {
+                btn.style.color = '#ffffff';
+                btn.style.background = 'rgba(255,255,255,0.2)';
+            }
+
+            // --- SCROLLBAR GRIS  ---
+            if (!document.getElementById('gray-scrollbar-style')) {
+                const style = document.createElement('style');
+                style.id = 'gray-scrollbar-style';
+                style.innerHTML = `
+                    ::-webkit-scrollbar { width: 12px !important; height: 12px !important; background: #e0e0e0 !important; }
+                    ::-webkit-scrollbar-thumb { background-color: #555 !important; border: 2px solid #e0e0e0 !important; border-radius: 10px !important; }
+                    ::-webkit-scrollbar-track { background-color: #e0e0e0 !important; }
+                    ::-webkit-scrollbar-corner { background-color: #e0e0e0 !important; }
+                    * { scrollbar-color: #555 #e0e0e0 !important; }
+                `;
+                document.head.appendChild(style);
+            }
+
+        } else {
+            body.classList.remove('grayscale-mode');
+            if(btn) {
+                btn.style.color = '';
+                btn.style.background = '';
+            }
+
+            const style = document.getElementById('gray-scrollbar-style');
+            if (style) {
+                style.remove();
+            }
+        }
+
+        localStorage.setItem('grayscale', active);
+    }
+
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            applyTheme(currentTheme);
+        }
+
+        function applyTheme(theme) {
+            const body = document.body;
+            const icon = document.getElementById('iconTheme');
+           
+            if (theme === 'dark') {
+                body.classList.add('dark-mode');
+                if(icon) icon.setAttribute('data-lucide', 'sun');
+            } else {
+                body.classList.remove('dark-mode');
+                if(icon) icon.setAttribute('data-lucide', 'moon');
+            }
+            lucide.createIcons(); 
+            localStorage.setItem('theme', theme);
+        }
+
+
+        function handleZoomIn() {
+            if (currentFontSize === "normal") applyFontSize("large");
+            else if (currentFontSize === "large") applyFontSize("xlarge");
+        }
+
+        function handleZoomOut() {
+            if (currentFontSize === "xlarge") applyFontSize("large");
+            else if (currentFontSize === "large") applyFontSize("normal");
+        }
+
+
+        function applyFontSize(size) {
+            currentFontSize = size;
+            const body = document.body;
+            const btnIn = document.getElementById('btnZoomIn');
+            const btnOut = document.getElementById('btnZoomOut');
+
+            body.classList.remove("font-size-normal", "font-size-large", "font-size-xlarge");
+            body.classList.add(`font-size-${size}`);
+
+            if(btnIn) btnIn.disabled = (size === 'xlarge');
+            if(btnOut) btnOut.disabled = (size === 'normal');
+           
+            localStorage.setItem('fontSize', size);
+        }
+
+
+        // --- Funciones de Cursor ---
+        function toggleCursor() {
+            cursorState = !cursorState;
+            applyCursor(cursorState);
+        }
+
+        function applyCursor(isLarge) {
+            const body = document.body;
+            const btn = document.getElementById('btnCursor');
+           
+            if (isLarge) {
+                body.classList.add('large-cursor');
+                if(btn) {
+                    btn.style.color = '#ffffff';
+                    btn.style.background = 'rgba(255,255,255,0.2)';
+                }
+            } else {
+                body.classList.remove('large-cursor');
+                if(btn) {
+                    btn.style.color = '';
+                    btn.style.background = '';
+                }
+            }
+            localStorage.setItem('cursor', isLarge ? 'large' : 'normal');
+        }
+
+
+        // --- Funciones del Modal ---
+        function toggleModal(show) {
+            isModalOpen = show;
+            const modal = document.getElementById('keyboardModal');
+            const backdrop = document.getElementById('modalBackdrop');
+
+
+            if (show) {
+                modal.classList.add('modal-open');
+                backdrop.classList.add('modal-open');
+            } else {
+                modal.classList.remove('modal-open');
+                backdrop.classList.remove('modal-open');
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+</body>
+</html>
+
