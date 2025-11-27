@@ -99,14 +99,11 @@
             </nav>
         </aside>
 
-
     {% endif %}
-
 
     <main class="main-content">
         {% block content %}{% endblock %}
     </main>
-
 
     </div>
         <div class="footer-content">
@@ -118,7 +115,6 @@
             </div>
         </div>
     </footer>
-
 
     <div class="accessibility-bar" role="toolbar" aria-label="Herramientas de accesibilidad">
        
@@ -152,7 +148,6 @@
         aria-label="Fuente para Dislexia" title="Fuente para Dislexia (Alt + D)">
         <i data-lucide="type"></i>
          </button>
-
 
         <button class="accessibility-btn" onclick="toggleModal(true)" aria-label="Atajos (Alt + K)" title="Atajos de teclado (Alt + K)">
             <i data-lucide="keyboard"></i>
@@ -320,33 +315,44 @@
             localStorage.setItem('theme', theme);
         }
 
-
         function handleZoomIn() {
-            if (currentFontSize === "normal") applyFontSize("large");
+            if (currentFontSize === "xsmall") applyFontSize("small");
+            else if (currentFontSize === "small") applyFontSize("normal");
+            else if (currentFontSize === "normal") applyFontSize("large");
             else if (currentFontSize === "large") applyFontSize("xlarge");
+            else if (currentFontSize === "xlarge") applyFontSize("xxlarge");
+            else if (currentFontSize === "xxlarge") applyFontSize("xxxlarge");
         }
 
         function handleZoomOut() {
-            if (currentFontSize === "xlarge") applyFontSize("large");
+            if (currentFontSize === "xxxlarge") applyFontSize("xxlarge");
+            else if (currentFontSize === "xxlarge") applyFontSize("xlarge");
+            else if (currentFontSize === "xlarge") applyFontSize("large");
             else if (currentFontSize === "large") applyFontSize("normal");
+            else if (currentFontSize === "normal") applyFontSize("small");
+            else if (currentFontSize === "small") applyFontSize("xsmall");
         }
-
 
         function applyFontSize(size) {
             currentFontSize = size;
+            const html = document.documentElement;
             const body = document.body;
             const btnIn = document.getElementById('btnZoomIn');
             const btnOut = document.getElementById('btnZoomOut');
 
-            body.classList.remove("font-size-normal", "font-size-large", "font-size-xlarge");
+            // Aplicar a html para que afecte a todos los elementos
+            html.classList.remove("font-size-xsmall", "font-size-small", "font-size-normal", "font-size-large", "font-size-xlarge", "font-size-xxlarge", "font-size-xxxlarge");
+            html.classList.add(`font-size-${size}`);
+            
+            // También aplicar al body para compatibilidad
+            body.classList.remove("font-size-xsmall", "font-size-small", "font-size-normal", "font-size-large", "font-size-xlarge", "font-size-xxlarge", "font-size-xxxlarge");
             body.classList.add(`font-size-${size}`);
 
-            if(btnIn) btnIn.disabled = (size === 'xlarge');
-            if(btnOut) btnOut.disabled = (size === 'normal');
+            if(btnIn) btnIn.disabled = (size === 'xxxlarge');
+            if(btnOut) btnOut.disabled = (size === 'xsmall');
            
             localStorage.setItem('fontSize', size);
         }
-
 
         // --- Funciones de Cursor ---
         function toggleCursor() {
@@ -420,8 +426,5 @@ function applyDyslexia(active) {
 }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-
 </body>
 </html>
-

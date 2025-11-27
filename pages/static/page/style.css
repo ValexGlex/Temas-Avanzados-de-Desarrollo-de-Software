@@ -33,11 +33,6 @@ body {
     flex-direction: column;
 }
 
-a, input, button{
-    min-height: 24px;
-    min-width: 24px;
-}
-
 /* Header Principal */
 .main-header {
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
@@ -1372,9 +1367,80 @@ kbd {
 /* =========================================
    3. CLASES DE TAMAÑO DE FUENTE
    ========================================= */
+/* Usar variable CSS para el tamaño base de fuente */
+:root {
+    --base-font-size: 16px;
+}
+
+/* Aplicar al html para que afecte a toda la página - esto establece el tamaño base */
+html.font-size-xsmall { 
+    font-size: 12px !important;
+    --base-font-size: 12px;
+}
+html.font-size-small { 
+    font-size: 14px !important;
+    --base-font-size: 14px;
+}
+html.font-size-normal { 
+    font-size: 16px !important;
+    --base-font-size: 16px;
+}
+html.font-size-large { 
+    font-size: 20px !important;
+    --base-font-size: 20px;
+}
+html.font-size-xlarge { 
+    font-size: 24px !important;
+    --base-font-size: 24px;
+}
+html.font-size-xxlarge { 
+    font-size: 28px !important;
+    --base-font-size: 28px;
+}
+html.font-size-xxxlarge { 
+    font-size: 32px !important;
+    --base-font-size: 32px;
+}
+
+/* Aplicar también al body para compatibilidad */
+body.font-size-xsmall { font-size: 12px; }
+body.font-size-small { font-size: 14px; }
 body.font-size-normal { font-size: 16px; }
-body.font-size-large { font-size: 18px; }
-body.font-size-xlarge { font-size: 20px; }
+body.font-size-large { font-size: 20px; }
+body.font-size-xlarge { font-size: 24px; }
+body.font-size-xxlarge { font-size: 28px; }
+body.font-size-xxxlarge { font-size: 32px; }
+
+/* Forzar que los elementos de texto principales usen el tamaño base del html */
+html[class*="font-size"] body,
+html[class*="font-size"] p,
+html[class*="font-size"] span,
+html[class*="font-size"] div:not(.accessibility-bar):not(.accessibility-btn),
+html[class*="font-size"] h1,
+html[class*="font-size"] h2,
+html[class*="font-size"] h3,
+html[class*="font-size"] h4,
+html[class*="font-size"] h5,
+html[class*="font-size"] h6,
+html[class*="font-size"] label,
+html[class*="font-size"] input,
+html[class*="font-size"] select,
+html[class*="font-size"] textarea,
+html[class*="font-size"] button:not(.accessibility-btn),
+html[class*="font-size"] a,
+html[class*="font-size"] li,
+html[class*="font-size"] td,
+html[class*="font-size"] th,
+html[class*="font-size"] .main-content,
+html[class*="font-size"] .app-container,
+html[class*="font-size"] .card,
+html[class*="font-size"] .chart-card,
+html[class*="font-size"] .student-form,
+html[class*="font-size"] .form-group,
+html[class*="font-size"] .stat-card,
+html[class*="font-size"] .muted {
+    font-size: inherit !important;
+}
 
 
 /* --- AÑADIDO POR VALERI: Estilos del Menú Lateral Dinámico --- */
@@ -1870,6 +1936,127 @@ body.dark-mode .pareto-controls {
 body.dark-mode .theme-toggle-menu { background: var(--card-bg); color: var(--text-primary); border-color: var(--border); }
 body.dark-mode .theme-toggle-btn { background: transparent; color: var(--text-primary); border-color: rgba(255,255,255,0.06); }
 
+/* Estilos para formularios en modo oscuro */
+body.dark-mode .form-group input,
+body.dark-mode .form-group select,
+body.dark-mode .form-group textarea {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border-color: var(--border);
+}
+
+body.dark-mode .form-group input::placeholder,
+body.dark-mode .form-group textarea::placeholder {
+    color: var(--text-secondary);
+}
+
+body.dark-mode .chart-select,
+body.dark-mode .form-select {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border-color: var(--border);
+}
+
+body.dark-mode .input {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border-color: var(--border);
+}
+
+body.dark-mode .input::placeholder {
+    color: var(--text-secondary);
+}
+
+body.dark-mode .btn-secondary {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border-color: var(--border);
+}
+
+body.dark-mode .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode select {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border-color: var(--border);
+}
+
+body.dark-mode input[type="text"],
+body.dark-mode input[type="password"],
+body.dark-mode input[type="email"],
+body.dark-mode input[type="number"],
+body.dark-mode input[type="date"],
+body.dark-mode textarea {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border-color: var(--border);
+}
+
+body.dark-mode input[type="text"]::placeholder,
+body.dark-mode input[type="password"]::placeholder,
+body.dark-mode input[type="email"]::placeholder,
+body.dark-mode textarea::placeholder {
+    color: var(--text-secondary);
+}
+
+/* Estilos de focus para formularios en modo oscuro */
+body.dark-mode .form-group input:focus,
+body.dark-mode .form-group select:focus,
+body.dark-mode .form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+body.dark-mode .input:focus,
+body.dark-mode input[type="text"]:focus,
+body.dark-mode input[type="password"]:focus,
+body.dark-mode input[type="email"]:focus,
+body.dark-mode input[type="number"]:focus,
+body.dark-mode textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+body.dark-mode .chart-select:focus,
+body.dark-mode .form-select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+/* Estilos de hover para formularios en modo oscuro */
+body.dark-mode .form-group input:hover,
+body.dark-mode .form-group select:hover,
+body.dark-mode .form-group textarea:hover {
+    border-color: var(--primary);
+    background: rgba(102, 126, 234, 0.05);
+}
+
+body.dark-mode .input:hover,
+body.dark-mode input[type="text"]:hover,
+body.dark-mode input[type="password"]:hover,
+body.dark-mode input[type="email"]:hover,
+body.dark-mode input[type="number"]:hover,
+body.dark-mode textarea:hover {
+    border-color: var(--primary);
+    background: rgba(102, 126, 234, 0.05);
+}
+
+body.dark-mode .chart-select:hover,
+body.dark-mode .form-select:hover {
+    border-color: var(--primary);
+    background: rgba(102, 126, 234, 0.05);
+}
+
+/* Estilos para opciones de select en modo oscuro */
+body.dark-mode select option {
+    background: var(--card-bg);
+    color: var(--text-primary);
+}
 
 
 /* =========================================
@@ -1886,5 +2073,3 @@ body.large-cursor input {
     /* Cursor SVG de 48px codificado en Base64 (Flecha Negra con Borde Blanco) */
     cursor: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBmaWxsPSJibGFjayIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxLjUiPjxwYXRoIGQ9Ik0yIDJsMTEgMTguNSAzLjUtOCA4LTMuNUwyIDJ6Ii8+PC9zdmc+') 0 0, auto !important;
 }
-
-
