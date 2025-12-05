@@ -48,7 +48,6 @@ jobs:
         with:
           args: >
             -Dsonar.organization=tecmaribel
-            -Dsonar.projectKey=tecmaribel
+            -Dsonar.projectKey=ValexGlex_Temas-Avanzados-de-Desarrollo-de-Software
             -Dsonar.python.coverage.reportPaths=coverage.xml
             -Dsonar.sources=.
-            -Dsonar.branch.name=main
