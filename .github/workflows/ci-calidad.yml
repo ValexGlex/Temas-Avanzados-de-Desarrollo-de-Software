@@ -48,6 +48,6 @@ jobs:
         with:
           args: >
             -Dsonar.organization=tec-maribel
-            -Dsonar.projectKey=tec_maribel
+            -Dsonar.projectKey=tec-maribe
             -Dsonar.python.coverage.reportPaths=coverage.xml
             -Dsonar.sources=.
