@@ -1,42 +1,53 @@
-name: Django CI
+name: CI y Calidad de Código
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "master" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "master" ]
 
 jobs:
-  build:
+  build-test-analyze:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Descargar repositorio
-      uses: actions/checkout@v3
+      # 1. Obtener el código
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Importante para que SonarCloud analice todo el historial
 
-    - name: Configurar Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+      # 2. Configurar Python
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
-    - name: Instalar dependencias
-      run: |
-        python -m pip install --upgrade pip
-        pip install "django>=4.2,<5.0"
-        pip install pandas numpy matplotlib seaborn plotly
-        pip install "psycopg[binary]"
-        pip install djongo
-        pip install dnspython
-        pip install flake8
+      # 3. Instalar dependencias (CORREGIDO: Alineación del guion)
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install "django>=4.2,<5.0"
+          pip install pandas numpy matplotlib seaborn plotly
+          pip install "psycopg[binary]"
+          pip install djongo
+          pip install dnspython
+          pip install flake8
+          pip install pytest pytest-cov
 
-    - name: Ejecutar análisis estático (flake8)
-      run: flake8 .
+      # 4. Ejecutar Pruebas con cobertura
+      - name: Ejecutar Tests con cobertura
+        run: |
+          pytest --cov=. --cov-report=xml
 
-    - name: Ejecutar migraciones
-      run: |
-        python manage.py makemigrations --noinput
-        python manage.py migrate --noinput
-
-    - name: Ejecutar pruebas (si existen)
-      run: |
-        python manage.py test || echo "No hay pruebas, continuando..."
+      # 5. Análisis de SonarCloud
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.organization=tec-maribel
+            -Dsonar.projectKey=tec_maribel
+            -Dsonar.python.coverage.reportPaths=coverage.xml
+            -Dsonar.sources=.
