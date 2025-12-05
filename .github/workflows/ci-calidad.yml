@@ -47,7 +47,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.organization=Tec_Maribel
-            -Dsonar.projectKey=tec-maribel
+            -Dsonar.organization=tecmaribel
+            -Dsonar.projectKey=tecmaribel
             -Dsonar.python.coverage.reportPaths=coverage.xml
             -Dsonar.sources=.
